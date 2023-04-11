@@ -38,7 +38,7 @@ consumers = Consumers()
 
 
 async def process_message_with_simple_await(message: aio_pika.abc.AbstractIncomingMessage) -> None:
-    global rabbit_kill_event, consumers
+    global consumers
     async with message.process(requeue=False):
         current_task = asyncio.current_task()
         try:
@@ -49,13 +49,12 @@ async def process_message_with_simple_await(message: aio_pika.abc.AbstractIncomi
             await asyncio.sleep(300)
         except asyncio.CancelledError:
             logging.info(f"Task {current_task.get_name()} was cancelled")
-            # rabbit_kill_event.set()
         else:
             consumers.remove_consumer(current_task)
 
 
 async def process_message_with_wait_other_tasks(message: aio_pika.abc.AbstractIncomingMessage) -> None:
-    global rabbit_kill_event, consumers
+    global consumers
     async with message.process(requeue=False):
         current_task = asyncio.current_task()
         try:
@@ -72,7 +71,6 @@ async def process_message_with_wait_other_tasks(message: aio_pika.abc.AbstractIn
                 pending_task.cancel()
         except asyncio.CancelledError:
             logging.info(f"Task {current_task.get_name()} was cancelled")
-            rabbit_kill_event.set()
         else:
             consumers.remove_consumer(current_task)
 
