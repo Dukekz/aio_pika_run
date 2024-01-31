@@ -1,4 +1,4 @@
-# Graceful aio-pika rabbitmq consumer terminate example, with message ack on termination
+# Aio-pika rabbitmq consumer graceful terminate example, with message ack on termination
 
 Example of consuming messages from rabbitmq, with mandatory ack message on terminate or Ctrl+C signal received.
 Once I had a need of an asynchronous service that would consume the rabbit queue by executing commands from messages. I faced with the peculiarity of the asynchronous context manager message.process() in case when application terminates. Whatever settings I applied for message.process(requeue=False/True) and others, in all cases the message was not acknowledged and remained in the queue after the service stop. But I needed to confirm the message in any case. Acking the message immediately upon receipt was also not suitable, the next one was immediately received by async consumer.
